@@ -1,8 +1,13 @@
 # Evalys Arcium Bridge Service
 
-**FastAPI microservice that bridges Evalys components to Arcium's encrypted supercomputer.**
+**FastAPI microservice that bridges Evalys components to [Arcium's encrypted supercomputer](https://arcium.com/).**
 
-This service handles client encryption, submits confidential computation jobs to the Evalys Confidential Intel MXE, and feeds results back into Evalys services.
+This service handles client encryption, submits confidential computation jobs to the unified Arcium gMPC MXE, and feeds results back into Evalys services.
+
+**Built with Arcium**: This service integrates with [Arcium's decentralized private computation network](https://docs.arcium.com/developers) to enable confidential computation. Learn more:
+- [Arcium Developer Documentation](https://docs.arcium.com/developers)
+- [Arcium GitHub Organization](https://github.com/orgs/arcium-hq/)
+- [Arcium Discord Community](https://discord.com/invite/arcium)
 
 ## Overview
 
@@ -252,5 +257,21 @@ See LICENSE file.
 
 For questions or issues:
 - Evalys: [GitHub Issues](https://github.com/evalysfun/evalys-arcium-bridge-service/issues)
+
+## Arcium Resources
+
+**Learn More About Arcium**:
+- [Arcium Website](https://arcium.com/) - The encrypted supercomputer
+- [Arcium Developer Documentation](https://docs.arcium.com/developers) - Complete developer guide
+- [Arcium GitHub Organization](https://github.com/orgs/arcium-hq/) - Source code, examples, and tools
+- [Arcium Discord](https://discord.com/invite/arcium) - Join the community
+
+**Arcium enables**:
+- Privacy-preserving applications on Solana
+- Processing sensitive data while keeping it encrypted
+- Familiar tooling (Arcis extends Anchor)
+- Full composability within Solana ecosystem
+
+This bridge service demonstrates how to integrate with Arcium's encrypted supercomputer. For more examples and tutorials, visit the [Arcium Developer Documentation](https://docs.arcium.com/developers).
 - Arcium: [Discord](https://discord.gg/arcium)
 
