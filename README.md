@@ -14,9 +14,47 @@ This service handles client encryption, submits confidential computation jobs to
 The Arcium Bridge Service enables Evalys to:
 
 - **Encrypt sensitive inputs** (user preferences, history, portfolio context) before sending to Arcium
-- **Submit confidential computations** to the Evalys Confidential Intel MXE
+- **Submit confidential computations** to the unified Arcium gMPC MXE
 - **Decrypt and process results** from Arcium MPC computations
 - **Feed confidential intelligence** back to Evalys Privacy Engine, Curve Intelligence, and Execution Engine
+
+## Status: v0.1 (Alpha)
+
+### What's Live Now (v0.1)
+
+✅ **API Endpoints**: FastAPI REST API with 3 endpoints:
+- `POST /arcium/plan` - Confidential strategy planning
+- `POST /arcium/risk-score` - Confidential risk assessment
+- `POST /arcium/curve-eval` - Confidential curve evaluation
+
+✅ **Message Schemas**: Pydantic models for all request/response types
+
+✅ **Simulated Computation**: Placeholder logic that simulates Arcium computation (for development/testing)
+
+✅ **Basic Error Handling**: HTTP error responses and logging
+
+✅ **Documentation**: Bridge spec, crypto docs, and API documentation
+
+### What's Next
+
+🔜 **v0.2**: Real Arcium SDK Integration
+- Actual Arcium client SDK integration
+- Real encryption/decryption using Arcium keys
+- Solana transaction submission to MXE
+
+🔜 **v0.3**: Receipt Verification
+- Proof/receipt signature verification
+- Result hash validation
+- Timestamp validation (replay prevention)
+
+🔜 **v0.4**: Multi-Relay Routing
+- Support for multiple Arcium relay nodes
+- Automatic failover
+- Load balancing
+
+🔜 **v0.5**: Threshold Signing
+- Distributed key management
+- Sharded signing support
 
 ## Architecture
 
@@ -161,28 +199,38 @@ pip install -e .
 
 ## Configuration
 
-Create a `.env` file:
+Copy `.env.example` to `.env` and fill in the values:
 
-```env
-# Arcium MXE Configuration
-ARCIUM_MXE_PROGRAM_ID=your_mxe_program_id
-ARCIUM_CLUSTER_OFFSET=1078779259
-ARCIUM_RPC_URL=https://api.devnet.solana.com
-
-# Solana Configuration
-SOLANA_RPC_URL=https://api.devnet.solana.com
-SOLANA_KEYPAIR_PATH=~/.config/solana/id.json
-
-# Service Configuration
-API_HOST=0.0.0.0
-API_PORT=8010
-API_DEBUG=false
-
-# Arcium Client Configuration
-ARCIUM_CLIENT_ENCRYPTION_KEY=your_encryption_key_here
+```bash
+cp .env.example .env
+# Edit .env with your configuration
 ```
 
+See `.env.example` for all required configuration options.
+
+**Required Configuration**:
+- `ARCIUM_MXE_PROGRAM_ID`: Solana program ID for the unified Arcium gMPC MXE
+- `SOLANA_RPC_URL`: Solana RPC endpoint
+- `ARCIUM_CLIENT_ENCRYPTION_KEY`: 256-bit encryption key (base64 encoded)
+
+**Optional Configuration**:
+- `API_HOST`, `API_PORT`: Server binding (default: 0.0.0.0:8010)
+- `LOG_LEVEL`: Logging level (default: INFO)
+
 ## Running
+
+### Quick Start (Demo Mode)
+
+The easiest way to start the service for demo/testing:
+
+```bash
+# Quick start script (no configuration needed)
+python start_server.py
+```
+
+This starts the service on `http://localhost:8010` with simulated computation (v0.1).
+
+### Standard Start
 
 ```bash
 # Activate shared venv
@@ -199,6 +247,16 @@ $env:PYTHONPATH = "."  # Windows PowerShell
 cd evalys-arcium-bridge-service
 python -m src.api.server
 ```
+
+### Using Uvicorn
+
+```bash
+uvicorn src.api.server:app --host 0.0.0.0 --port 8010 --reload
+```
+
+**Note**: For demo mode (v0.1), no `.env` file is required. The service uses simulated computation. For production (v0.2+), configure `.env` with real Arcium credentials.
+
+See [QUICKSTART.md](QUICKSTART.md) for detailed instructions.
 
 ## Integration with Evalys
 
@@ -234,20 +292,103 @@ recommendation = await bridge.get_curve_evaluation(
 )
 ```
 
+## Project Structure
+
+```
+evalys-arcium-bridge-service/
+├── src/
+│   ├── api/              # FastAPI routes and server
+│   │   ├── routes.py     # API endpoints
+│   │   └── server.py     # FastAPI app
+│   ├── bridge/           # Bridge logic
+│   │   ├── arcium_client.py  # Arcium client (simulated in v0.1)
+│   │   └── models.py     # Pydantic models
+│   ├── config/          # Configuration
+│   │   └── settings.py  # Settings from env vars
+│   └── utils/           # Utilities
+│       └── logger.py    # Logging setup
+├── tests/               # Test suite
+│   ├── test_intent_validation.py
+│   ├── test_receipt_verification.py
+│   └── test_confidential_boundary.py
+├── docs/                # Documentation
+│   ├── bridge-spec.md   # Protocol specification
+│   └── crypto.md        # Cryptographic operations
+├── examples/            # Example scripts
+│   └── demo.py          # API demo script
+├── .env.example         # Configuration template
+└── README.md
+```
+
 ## Dependencies
 
 - `fastapi` - Web framework
 - `uvicorn` - ASGI server
-- `solana` - Solana Python SDK
-- `@arcium-hq/client` (via subprocess or HTTP) - Arcium client library
+- `solana-py` - Solana Python SDK
+- `pydantic` - Data validation
+- `pydantic-settings` - Settings management
 - `python-dotenv` - Environment variable management
+
+**Future Dependencies** (v0.2+):
+- Arcium client SDK (when available)
+- Additional crypto libraries for receipt verification
+
+## Documentation
+
+- **[Bridge Specification](docs/bridge-spec.md)**: Protocol specification with actors, message types, flows, and failure modes
+- **[Cryptographic Operations](docs/crypto.md)**: Key management, encryption/decryption, and Arcium API usage
+- **[Arcium Integration Guide](../ARCIUM_INTEGRATION_GUIDE.md)**: Complete integration guide for Evalys + Arcium
+
+## Testing
+
+```bash
+# Run all tests
+pytest
+
+# Run specific test suite
+pytest tests/test_intent_validation.py
+pytest tests/test_receipt_verification.py
+pytest tests/test_confidential_boundary.py
+```
+
+**Test Coverage**:
+- ✅ Intent schema validation (malformed inputs rejected)
+- ✅ Receipt verification (placeholder - to be implemented in v0.3)
+- ✅ Confidential boundary enforcement (placeholder - to be implemented in v0.2)
+
+## Demo
+
+Run the interactive demo script:
+
+```bash
+# Start the bridge service first
+python -m src.api.server
+
+# In another terminal, run the demo
+python examples/demo.py
+```
+
+The demo shows:
+- Confidential strategy plan request/response
+- Risk score assessment
+- Curve evaluation
+- Health check
+
+**Expected Output**: See `examples/demo.py` for example requests and expected responses.
 
 ## Security Considerations
 
-- All sensitive data is encrypted before transmission
-- Encryption keys are managed securely
-- Results are decrypted only within the bridge service
-- No sensitive data is logged or exposed
+**v0.1 (Current)**:
+- Input validation using Pydantic models
+- Basic error handling (no sensitive data in errors)
+- Structured logging (no sensitive data in logs)
+
+**v0.2+ (Planned)**:
+- All sensitive data encrypted before transmission
+- Encryption keys managed securely (env vars or secret management)
+- Results decrypted only within bridge service
+- Receipt/proof verification before trusting results
+- No sensitive data logged or exposed
 
 ## License
 

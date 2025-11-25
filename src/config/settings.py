@@ -3,8 +3,12 @@
 try:
     from pydantic_settings import BaseSettings
 except ImportError:
-    # Fallback for older pydantic versions
-    from pydantic import BaseSettings
+    try:
+        # Fallback for older pydantic v2 versions
+        from pydantic import BaseSettings
+    except ImportError:
+        # Fallback for pydantic v1
+        from pydantic import BaseSettings
 
 from typing import Optional
 
@@ -13,7 +17,8 @@ class Settings(BaseSettings):
     """Application settings"""
     
     # Arcium MXE Configuration
-    arcium_mxe_program_id: str
+    # Note: Optional for demo mode (v0.1 uses simulated computation)
+    arcium_mxe_program_id: Optional[str] = None
     arcium_cluster_offset: int = 1078779259
     arcium_rpc_url: str = "https://api.devnet.solana.com"
     

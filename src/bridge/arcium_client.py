@@ -4,7 +4,6 @@ import asyncio
 import json
 from typing import Optional
 from solana.rpc.async_api import AsyncClient
-from solana.keypair import Keypair
 from solders.pubkey import Pubkey
 from ..config.settings import Settings
 from ..utils.logger import get_logger
@@ -49,11 +48,15 @@ class ArciumBridgeClient:
             self.solana_client = AsyncClient(self.settings.solana_rpc_url)
         
         if self.mxe_program_id is None:
-            try:
-                self.mxe_program_id = Pubkey.from_string(self.settings.arcium_mxe_program_id)
-            except Exception as e:
-                logger.error(f"Failed to parse MXE program ID: {e}")
-                raise
+            if self.settings.arcium_mxe_program_id:
+                try:
+                    self.mxe_program_id = Pubkey.from_string(self.settings.arcium_mxe_program_id)
+                except Exception as e:
+                    logger.error(f"Failed to parse MXE program ID: {e}")
+                    raise
+            else:
+                # Demo mode: no program ID needed for simulated computation
+                logger.warning("ARCIUM_MXE_PROGRAM_ID not set - running in demo mode (simulated computation)")
     
     async def get_confidential_plan(
         self,

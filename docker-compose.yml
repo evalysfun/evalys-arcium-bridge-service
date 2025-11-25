@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  bridge-service:
+    build: .
+    container_name: evalys-arcium-bridge
+    ports:
+      - "8010:8010"
+    env_file:
+      - .env
+    environment:
+      - API_HOST=0.0.0.0
+      - API_PORT=8010
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:8010/health')"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+    volumes:
+      # Mount .env file if needed (or use env_file)
+      - ./logs:/app/logs  # Optional: for log persistence
+

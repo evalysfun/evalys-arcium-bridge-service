@@ -28,6 +28,12 @@ app.add_middleware(
 app.include_router(router, prefix="/api/v1")
 
 
+@app.get("/health")
+async def root_health():
+    """Root-level health check endpoint"""
+    return {"status": "healthy", "service": "evalys-arcium-bridge"}
+
+
 @app.on_event("startup")
 async def startup_event():
     """Startup event handler"""
